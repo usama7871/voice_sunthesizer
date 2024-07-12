@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Cloning App</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Voice Cloning App</h1>
+        <form id="voiceForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="voiceSample">Upload Voice Sample:</label>
+                <input type="file" id="voiceSample" name="voiceSample" accept="audio/*" required>
+            </div>
+            <div class="form-group">
+                <label for="textInput">Enter Text:</label>
+                <input type="text" id="textInput" name="textInput" placeholder="Enter text to be spoken" required>
+            </div>
+            <button type="submit">Generate Voice</button>
+        </form>
+        <div id="output">
+            <h2>Generated Voice</h2>
+            <audio id="audioOutput" controls></audio>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#voiceForm').submit(function(event) {
+                event.preventDefault();
+                var formData = new FormData($(this)[0]);
+
+                $.ajax({
+                    url: '/upload',
+                    type: 'POST',
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    xhrFields: {
+                        responseType: 'blob'
+                    },
+                    success: function(blob) {
+                        var url = URL.createObjectURL(blob);
+                        $('#audioOutput').attr('src', url);
+                        $('#audioOutput')[0].play();
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
